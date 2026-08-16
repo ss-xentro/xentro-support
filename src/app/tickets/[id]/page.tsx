@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getAuthCookieServer } from "@/lib/auth-utils"
 import { prisma } from "@/lib/prisma"
 import { redirect, notFound } from "next/navigation"
 import Link from "next/link"
@@ -7,9 +6,9 @@ import { ArrowLeft, Send } from "lucide-react"
 import { revalidatePath } from "next/cache"
 
 export default async function TicketDetail({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
+  const sessionUser = await getAuthCookieServer()
 
-  if (!session) {
+  if (!sessionUser || !sessionUser.id) {
     redirect("/")
   }
 
@@ -31,7 +30,7 @@ export default async function TicketDetail({ params }: { params: { id: string } 
   }
 
   // Ensure user owns ticket or is admin
-  if (ticket.userId !== session.user.id && session.user.role !== 'ADMIN') {
+  if (ticket.userId !== sessionUser.id && sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN') {
     redirect("/dashboard")
   }
 
@@ -40,14 +39,14 @@ export default async function TicketDetail({ params }: { params: { id: string } 
     const message = formData.get("message") as string
     if (!message || !message.trim()) return
 
-    const userSession = await getServerSession(authOptions)
-    if (!userSession) return
+    const userSession = await getAuthCookieServer()
+    if (!userSession || !userSession.id) return
 
     await prisma.ticketMessage.create({
       data: {
         message: message.trim(),
         ticketId: id,
-        userId: userSession.user.id,
+        userId: userSession.id,
       }
     })
 
@@ -57,9 +56,9 @@ export default async function TicketDetail({ params }: { params: { id: string } 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 py-10">
-        <Link href={session.user.role === 'ADMIN' ? "/admin/tickets" : "/dashboard"} className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 mb-8 transition-colors">
+        <Link href={sessionUser.role === 'admin' || sessionUser.role === 'ADMIN' ? "/admin/tickets" : "/dashboard"} className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          Back to {session.user.role === 'ADMIN' ? 'Admin Tickets' : 'Dashboard'}
+          Back to {sessionUser.role === 'admin' || sessionUser.role === 'ADMIN' ? 'Admin Tickets' : 'Dashboard'}
         </Link>
 
         <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden mb-8">
@@ -90,7 +89,7 @@ export default async function TicketDetail({ params }: { params: { id: string } 
             ) : (
               ticket.messages.map((msg) => {
                 const isAdmin = msg.user.role === 'ADMIN'
-                const isMe = msg.userId === session.user.id
+                const isMe = msg.userId === sessionUser.id
 
                 return (
                   <div key={msg.id} className={`flex gap-4 ${isMe ? 'flex-row-reverse' : ''}`}>

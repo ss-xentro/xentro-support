@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getAuthCookieServer } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { LayoutDashboard, FileText, Settings, Users } from "lucide-react"
@@ -9,9 +8,9 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
+  const sessionUser = await getAuthCookieServer()
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!sessionUser || (sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN')) {
     redirect("/")
   }
 

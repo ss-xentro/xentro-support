@@ -1,19 +1,18 @@
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getAuthCookieServer } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { PlusCircle, MessageSquare } from "lucide-react"
 
 export default async function Dashboard() {
-  const session = await getServerSession(authOptions)
+  const sessionUser = await getAuthCookieServer()
 
-  if (!session) {
+  if (!sessionUser || !sessionUser.id) {
     redirect("/")
   }
 
   const tickets = await prisma.ticket.findMany({
-    where: { userId: session.user.id },
+    where: { userId: sessionUser.id },
     orderBy: { updatedAt: 'desc' },
     include: { _count: { select: { messages: true } } }
   })

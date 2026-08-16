@@ -1,34 +1,15 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getAuthCookieServer } from "@/lib/auth-utils"
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(req.url)
-    const search = searchParams.get('q')
-
-    let whereClause: any = { published: true }
-
-    if (search) {
-      whereClause = {
-        ...whereClause,
-        OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { content: { contains: search, mode: 'insensitive' } },
-        ]
-      }
-    }
-
     const faqs = await prisma.fAQ.findMany({
-      where: whereClause,
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        content: true,
-        updatedAt: true,
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        author: {
+          select: { name: true }
+        }
       }
     })
 
@@ -41,11 +22,17 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const sessionUser = await getAuthCookieServer()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!sessionUser || !sessionUser.id || (sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN')) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
+
+    await prisma.user.upsert({
+      where: { id: sessionUser.id },
+      update: { name: sessionUser.name, email: sessionUser.email, role: 'ADMIN' },
+      create: { id: sessionUser.id, name: sessionUser.name, email: sessionUser.email, role: 'ADMIN' }
+    })
 
     const body = await req.json()
     const { title, slug, content, published } = body
@@ -60,7 +47,7 @@ export async function POST(req: Request) {
         slug,
         content,
         published: published || false,
-        authorId: session.user.id
+        authorId: sessionUser.id
       }
     })
 

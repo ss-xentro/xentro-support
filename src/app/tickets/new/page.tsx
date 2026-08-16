@@ -1,20 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
+import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Loader2 } from "lucide-react"
 
 export default function NewTicket() {
-  const { status } = useSession()
+  const { isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [loading, setLoading] = useState(false)
 
-  if (status === "unauthenticated") {
-    router.push("/")
+  // Wait for loading to finish, middleware handles actual redirect
+  if (!isLoading && !isAuthenticated) {
     return null
   }
 

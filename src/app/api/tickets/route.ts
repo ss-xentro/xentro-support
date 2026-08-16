@@ -1,23 +1,28 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getAuthCookieServer } from "@/lib/auth-utils"
 
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const sessionUser = await getAuthCookieServer()
 
-    if (!session) {
+    if (!sessionUser || !sessionUser.id) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
+
+    await prisma.user.upsert({
+      where: { id: sessionUser.id },
+      update: { name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' },
+      create: { id: sessionUser.id, name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' }
+    })
 
     const { searchParams } = new URL(req.url)
     const status = searchParams.get('status')
 
     let whereClause: any = {}
 
-    if (session.user.role !== 'ADMIN') {
-      whereClause.userId = session.user.id
+    if (sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN') {
+      whereClause.userId = sessionUser.id
     }
 
     if (status) {
@@ -46,11 +51,17 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const sessionUser = await getAuthCookieServer()
 
-    if (!session) {
+    if (!sessionUser || !sessionUser.id) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
+
+    await prisma.user.upsert({
+      where: { id: sessionUser.id },
+      update: { name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' },
+      create: { id: sessionUser.id, name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' }
+    })
 
     const body = await req.json()
     const { title, description } = body
@@ -63,7 +74,7 @@ export async function POST(req: Request) {
       data: {
         title,
         description,
-        userId: session.user.id
+        userId: sessionUser.id
       }
     })
 
