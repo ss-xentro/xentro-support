@@ -12,7 +12,7 @@ export default function Home() {
 
   const loginUrl = process.env.NEXT_PUBLIC_MAIN_APP_URL 
     ? `${process.env.NEXT_PUBLIC_MAIN_APP_URL}/login` 
-    : "http://localhost:3000/login"
+    : "https://xentro.switchspace.in/login"
 
   const handleSignOut = () => {
     document.cookie = "xentro_auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"

@@ -32,15 +32,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    try {
-      const raw = getCookie(AUTH_COOKIE)
-      if (raw) {
-        setUser(JSON.parse(raw))
+    let mounted = true
+    
+    async function fetchUser() {
+      try {
+        const raw = getCookie(AUTH_COOKIE)
+        if (!raw) {
+          setIsLoading(false)
+          return
+        }
+
+        // Fetch user from /api/me to get the actual Support Role
+        const res = await fetch("/api/me")
+        if (res.ok) {
+          const dbUser = await res.json()
+          if (mounted) {
+            setUser({
+              id: dbUser.id,
+              name: dbUser.name,
+              email: dbUser.email,
+              avatar: dbUser.image,
+              role: dbUser.role
+            })
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch support user", error)
+      } finally {
+        if (mounted) setIsLoading(false)
       }
-    } catch {
-      // Ignored
-    } finally {
-      setIsLoading(false)
+    }
+
+    fetchUser()
+
+    return () => {
+      mounted = false
     }
   }, [])
 

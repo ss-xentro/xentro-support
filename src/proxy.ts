@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server"
 const AUTH_COOKIE = "xentro_auth"
 const MAIN_APP_LOGIN_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL
   ? `${process.env.NEXT_PUBLIC_MAIN_APP_URL}/login`
-  : "http://localhost:3000/login"
+  : "https://xentro.switchspace.in/login"
 
 const protectedPaths = ["/dashboard", "/admin", "/tickets"]
 

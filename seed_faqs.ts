@@ -16,7 +16,7 @@ const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log("Seeding detailed FAQs...")
-  
+
   let admin = await prisma.user.findFirst({
     where: { role: 'ADMIN' }
   })
@@ -24,8 +24,9 @@ async function main() {
   if (!admin) {
     admin = await prisma.user.create({
       data: {
+        id: "seed-admin-id",
         name: "System Admin",
-        email: "admin@xentro.in",
+        email: "mstelidevara123@gmail.com",
         role: "ADMIN"
       }
     })

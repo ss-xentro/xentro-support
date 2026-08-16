@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { getAuthCookieServer } from "@/lib/auth-utils"
+import { getSupportUser } from "@/lib/auth-utils"
 
 export async function GET() {
   try {
@@ -22,17 +22,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const sessionUser = await getAuthCookieServer()
+    const sessionUser = await getSupportUser()
 
-    if (!sessionUser || !sessionUser.id || (sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN')) {
+    if (!sessionUser || (sessionUser.role !== 'ADMIN' && sessionUser.role !== 'SUPER_ADMIN')) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
-
-    await prisma.user.upsert({
-      where: { id: sessionUser.id },
-      update: { name: sessionUser.name, email: sessionUser.email, role: 'ADMIN' },
-      create: { id: sessionUser.id, name: sessionUser.name, email: sessionUser.email, role: 'ADMIN' }
-    })
 
     const body = await req.json()
     const { title, slug, content, published } = body

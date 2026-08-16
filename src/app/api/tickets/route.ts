@@ -1,27 +1,21 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { getAuthCookieServer } from "@/lib/auth-utils"
+import { getSupportUser } from "@/lib/auth-utils"
 
 export async function GET(req: Request) {
   try {
-    const sessionUser = await getAuthCookieServer()
+    const sessionUser = await getSupportUser()
 
-    if (!sessionUser || !sessionUser.id) {
+    if (!sessionUser) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
-
-    await prisma.user.upsert({
-      where: { id: sessionUser.id },
-      update: { name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' },
-      create: { id: sessionUser.id, name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' }
-    })
 
     const { searchParams } = new URL(req.url)
     const status = searchParams.get('status')
 
     let whereClause: any = {}
 
-    if (sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN') {
+    if (sessionUser.role !== 'ADMIN' && sessionUser.role !== 'SUPER_ADMIN') {
       whereClause.userId = sessionUser.id
     }
 
@@ -51,17 +45,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const sessionUser = await getAuthCookieServer()
+    const sessionUser = await getSupportUser()
 
-    if (!sessionUser || !sessionUser.id) {
+    if (!sessionUser) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
-
-    await prisma.user.upsert({
-      where: { id: sessionUser.id },
-      update: { name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' },
-      create: { id: sessionUser.id, name: sessionUser.name, email: sessionUser.email, role: sessionUser.role === 'admin' ? 'ADMIN' : 'USER' }
-    })
 
     const body = await req.json()
     const { title, description } = body
