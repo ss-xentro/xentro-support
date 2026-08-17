@@ -11,19 +11,19 @@ import { Navbar } from "@/components/navbar"
 export default function NewTicket() {
   const router = useRouter()
   const { user, isAuthenticated, isLoading } = useAuth()
-  
+
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [profileUrl, setProfileUrl] = useState("")
+  const [profileUrl, setProfileUrl] = useState(user?.profileUrl || "")
   const [loading, setLoading] = useState(false)
   const [attachments, setAttachments] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
-  
+
   // Wait for loading to finish
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>
   }
-  
+
   if (!isAuthenticated) return null;
 
   if (isAuthenticated && user && !user.name) {
@@ -48,7 +48,7 @@ export default function NewTicket() {
           method: "POST",
           body: formData,
         })
-        
+
         if (res.ok) {
           const data = await res.json()
           if (data.url) {
@@ -123,7 +123,7 @@ export default function NewTicket() {
                 className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
               />
             </div>
-            
+
             <div>
               <label htmlFor="profileUrl" className="block text-sm font-medium mb-2">Xentro Profile URL</label>
               <input
