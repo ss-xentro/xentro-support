@@ -4,11 +4,9 @@ import { useAuth } from "@/contexts/AuthContext"
 import { signOut } from "next-auth/react"
 import Link from "next/link"
 import { LifeBuoy, LogIn, LogOut, LayoutDashboard } from "lucide-react"
-import { useTheme } from "@/components/theme-provider"
 
 export function Navbar() {
   const { user, isAuthenticated, isLoading } = useAuth()
-  const { theme, setTheme } = useTheme()
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' })
@@ -22,12 +20,6 @@ export function Navbar() {
           <span className="font-bold text-xl tracking-tight">Xentro Support</span>
         </Link>
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-full hover:bg-secondary transition-colors"
-          >
-            {theme === 'dark' ? '🌞' : '🌙'}
-          </button>
           {isLoading ? (
             <div className="w-20 h-8 bg-secondary animate-pulse rounded-md" />
           ) : isAuthenticated && user ? (
