@@ -30,16 +30,30 @@ export default async function Dashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Your Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Manage your support tickets and requests.</p>
+            <p className="text-muted-foreground mt-2">Manage your support tickets and requests.</p>
           </div>
-          <Link
-            href="/tickets/new"
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 flex items-center gap-2"
-          >
-            <PlusCircle className="w-4 h-4" />
-            New Ticket
-          </Link>
+          {sessionUser.name && (
+            <Link
+              href="/tickets/new"
+              className="bg-background border border-border text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary transition-all shadow-sm flex items-center gap-2"
+            >
+              <PlusCircle className="w-4 h-4" />
+              New Ticket
+            </Link>
+          )}
         </div>
+
+        {!sessionUser.name && (
+          <div className="bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 p-4 rounded-xl mb-8 flex items-start gap-4">
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg mb-1">Welcome to Xentro Support!</h3>
+              <p className="text-sm opacity-90">Please set up your profile name in settings before creating support tickets.</p>
+            </div>
+            <Link href="/settings" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+              Go to Settings
+            </Link>
+          </div>
+        )}
 
         <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
           {tickets.length === 0 ? (

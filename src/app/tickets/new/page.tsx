@@ -26,6 +26,11 @@ export default function NewTicket() {
   
   if (!isAuthenticated) return null;
 
+  if (isAuthenticated && user && !user.name) {
+    router.push("/settings")
+    return null
+  }
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return
 

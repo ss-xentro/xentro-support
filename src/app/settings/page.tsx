@@ -1,17 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { Navbar } from "@/components/navbar"
 import { Loader2, UploadCloud, User } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
-export default function SettingsPage() {
+function SettingsContent() {
   const { user, isAuthenticated, isLoading } = useAuth()
+  const searchParams = useSearchParams()
   const [name, setName] = useState("")
   const [image, setImage] = useState("")
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState("")
+
+  const isFirstLogin = searchParams.get("firstLogin") === "true" || (!isLoading && user && !user.name)
 
   useEffect(() => {
     if (user) {
@@ -87,6 +91,13 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <div className="flex-1 max-w-2xl mx-auto px-4 py-10 w-full">
+        {isFirstLogin && (
+          <div className="bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 p-4 rounded-xl mb-8">
+            <h3 className="font-semibold text-lg mb-1">Welcome to Xentro Support! 🎉</h3>
+            <p className="text-sm opacity-90">Before you can start creating support tickets, please take a moment to set up your profile name below.</p>
+          </div>
+        )}
+
         <h1 className="text-3xl font-bold tracking-tight mb-8">Account Settings</h1>
 
         <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
@@ -154,5 +165,13 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+      <SettingsContent />
+    </Suspense>
   )
 }
