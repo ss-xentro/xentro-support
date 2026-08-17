@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { revalidatePath } from "next/cache"
+import StatusSelect from "./status-select"
 
 export const dynamic = "force-dynamic"
 
@@ -54,21 +55,7 @@ export default async function AdminTickets() {
                 <td className="px-6 py-4">
                   <form action={updateStatus}>
                     <input type="hidden" name="id" value={ticket.id} />
-                    <select
-                      name="status"
-                      defaultValue={ticket.status}
-                      onChange={(e) => e.target.form?.requestSubmit()}
-                      className={`text-xs font-semibold rounded-md px-2 py-1 border border-border bg-background focus:ring-2 focus:ring-primary outline-none cursor-pointer ${
-                        ticket.status === 'OPEN' ? 'text-green-600 dark:text-green-400' :
-                        ticket.status === 'IN_PROGRESS' ? 'text-blue-600 dark:text-blue-400' :
-                        'text-gray-600 dark:text-gray-400'
-                      }`}
-                    >
-                      <option value="OPEN">OPEN</option>
-                      <option value="IN_PROGRESS">IN PROGRESS</option>
-                      <option value="RESOLVED">RESOLVED</option>
-                      <option value="CLOSED">CLOSED</option>
-                    </select>
+                    <StatusSelect ticketStatus={ticket.status} />
                   </form>
                 </td>
                 <td className="px-6 py-4 text-muted-foreground">

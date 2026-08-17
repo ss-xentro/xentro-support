@@ -11,6 +11,10 @@ export default async function Dashboard() {
     redirect("/login")
   }
 
+  if (sessionUser.role === 'ADMIN' || sessionUser.role === 'SUPER_ADMIN') {
+    redirect("/admin/tickets")
+  }
+
   const tickets = await prisma.ticket.findMany({
     where: { userId: sessionUser.id },
     orderBy: { updatedAt: 'desc' },
@@ -63,11 +67,10 @@ export default async function Dashboard() {
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        ticket.status === 'OPEN' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                        ticket.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
-                        'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-                      }`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${ticket.status === 'OPEN' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                          ticket.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                            'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                        }`}>
                         {ticket.status.replace('_', ' ')}
                       </span>
                     </div>

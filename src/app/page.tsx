@@ -1,22 +1,18 @@
 "use client"
 
 import { useAuth } from "@/contexts/AuthContext"
+import { signOut } from "next-auth/react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Search, LifeBuoy, Book, LogIn, LogOut, LayoutDashboard } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useTheme } from "@/components/theme-provider"
 
 export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth()
   const { theme, setTheme } = useTheme()
 
-  const loginUrl = process.env.NEXT_PUBLIC_MAIN_APP_URL 
-    ? `${process.env.NEXT_PUBLIC_MAIN_APP_URL}/login` 
-    : "https://xentro.switchspace.in/login"
-
   const handleSignOut = () => {
-    document.cookie = "xentro_auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
-    window.location.reload()
+    signOut({ callbackUrl: '/' })
   }
 
   return (
@@ -44,7 +40,7 @@ export default function Home() {
             ) : isAuthenticated && user ? (
               <div className="flex items-center gap-3">
                 <Link
-                  href={user.role === 'admin' || user.role === 'ADMIN' ? "/admin" : "/dashboard"}
+                  href={user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? "/admin" : "/dashboard"}
                   className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
                 >
                   <LayoutDashboard className="w-4 h-4" />
@@ -59,13 +55,13 @@ export default function Home() {
                 </button>
               </div>
             ) : (
-              <a
-                href={loginUrl}
+              <Link
+                href="/login"
                 className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-all shadow-sm flex items-center gap-2"
               >
                 <LogIn className="w-4 h-4" />
                 Sign In
-              </a>
+              </Link>
             )}
           </div>
         </div>

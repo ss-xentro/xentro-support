@@ -30,7 +30,7 @@ export default async function TicketDetail({ params }: { params: { id: string } 
   }
 
   // Ensure user owns ticket or is admin
-  if (ticket.userId !== sessionUser.id && sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN') {
+  if (ticket.userId !== sessionUser.id && sessionUser.role !== 'ADMIN' && sessionUser.role !== 'SUPER_ADMIN') {
     redirect("/dashboard")
   }
 
@@ -56,20 +56,19 @@ export default async function TicketDetail({ params }: { params: { id: string } 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 py-10">
-        <Link href={sessionUser.role === 'admin' || sessionUser.role === 'ADMIN' ? "/admin/tickets" : "/dashboard"} className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 mb-8 transition-colors">
+        <Link href={sessionUser.role === 'ADMIN' || sessionUser.role === 'SUPER_ADMIN' ? "/admin/tickets" : "/dashboard"} className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          Back to {sessionUser.role === 'admin' || sessionUser.role === 'ADMIN' ? 'Admin Tickets' : 'Dashboard'}
+          Back to {sessionUser.role === 'ADMIN' || sessionUser.role === 'SUPER_ADMIN' ? 'Admin Tickets' : 'Dashboard'}
         </Link>
 
         <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden mb-8">
           <div className="p-6 border-b border-border bg-muted/30">
             <div className="flex justify-between items-start mb-4">
               <h1 className="text-2xl font-bold">{ticket.title}</h1>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                ticket.status === 'OPEN' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                ticket.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
-                'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-              }`}>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${ticket.status === 'OPEN' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                  ticket.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                    'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                }`}>
                 {ticket.status.replace('_', ' ')}
               </span>
             </div>
@@ -79,10 +78,10 @@ export default async function TicketDetail({ params }: { params: { id: string } 
                 <h3 className="text-sm font-semibold mb-3 text-foreground">Attachments</h3>
                 <div className="flex flex-wrap gap-3">
                   {ticket.attachments.map((url, i) => (
-                    <a 
-                      key={i} 
-                      href={url} 
-                      target="_blank" 
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
                       rel="noreferrer"
                       className="group relative block w-32 h-32 rounded-lg border border-border overflow-hidden bg-muted"
                     >
@@ -104,7 +103,7 @@ export default async function TicketDetail({ params }: { params: { id: string } 
               <div><strong className="text-foreground">Profile URL:</strong> <a href={ticket.profileUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">{ticket.profileUrl}</a></div>
             </div>
           </div>
-          
+
           <div className="p-6 space-y-6">
             {ticket.messages.length === 0 ? (
               <div className="text-center py-10 text-muted-foreground italic">
