@@ -23,13 +23,17 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json()
-    const { name, image } = body
+    const { name, profileUrl } = body
+
+    if (profileUrl && !profileUrl.startsWith("https://xentro.in/")) {
+      return new NextResponse("Profile URL must be a valid Xentro public profile (starts with https://xentro.in/)", { status: 400 })
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {
         name: name !== undefined ? name : undefined,
-        image: image !== undefined ? image : undefined,
+        profileUrl: profileUrl !== undefined ? profileUrl : undefined,
       }
     })
 

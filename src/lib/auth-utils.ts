@@ -7,6 +7,7 @@ export interface SessionUser {
   email: string
   name?: string | null
   image?: string | null
+  profileUrl?: string | null
   role: 'USER' | 'ADMIN' | 'SUPER_ADMIN'
 }
 

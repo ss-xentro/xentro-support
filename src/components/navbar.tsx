@@ -38,16 +38,12 @@ export function Navbar() {
             <div className="w-10 h-10 bg-secondary animate-pulse rounded-full" />
           ) : isAuthenticated && user ? (
             <div className="relative" ref={dropdownRef}>
-              <button 
+              <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-2 p-1.5 rounded-full hover:bg-secondary/80 transition-colors border border-transparent focus:border-border"
               >
                 <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center overflow-hidden">
-                  {user.image ? (
-                    <img src={user.image} alt={user.name || "User"} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="font-bold text-sm">{(user.name || "U").charAt(0).toUpperCase()}</span>
-                  )}
+                  <span className="font-bold text-sm">{(user.name || "U").charAt(0).toUpperCase()}</span>
                 </div>
                 <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -58,7 +54,7 @@ export function Navbar() {
                     <p className="text-sm font-medium truncate">{user.name || "User"}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
-                  
+
                   <Link
                     href={user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? "/admin/tickets" : "/dashboard"}
                     className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-secondary transition-colors"
@@ -67,7 +63,7 @@ export function Navbar() {
                     <LayoutDashboard className="w-4 h-4 text-muted-foreground" />
                     Dashboard
                   </Link>
-                  
+
                   <Link
                     href="/settings"
                     className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-secondary transition-colors"
@@ -76,9 +72,9 @@ export function Navbar() {
                     <Settings className="w-4 h-4 text-muted-foreground" />
                     Settings
                   </Link>
-                  
+
                   <div className="h-px bg-border/50 my-2" />
-                  
+
                   <button
                     onClick={() => {
                       setDropdownOpen(false);

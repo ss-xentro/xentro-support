@@ -3,16 +3,15 @@
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { Navbar } from "@/components/navbar"
-import { Loader2, UploadCloud, User } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 
 function SettingsContent() {
   const { user, isAuthenticated, isLoading } = useAuth()
   const searchParams = useSearchParams()
   const [name, setName] = useState("")
-  const [image, setImage] = useState("")
+  const [profileUrl, setProfileUrl] = useState("")
   const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState("")
 
   const isFirstLogin = searchParams.get("firstLogin") === "true" || (!isLoading && user && !user.name)
@@ -20,7 +19,7 @@ function SettingsContent() {
   useEffect(() => {
     if (user) {
       setName(user.name || "")
-      setImage(user.image || "")
+      setProfileUrl(user.profileUrl || "")
     }
   }, [user])
 
@@ -32,33 +31,7 @@ function SettingsContent() {
     return null // Next.js middleware should redirect if needed, but just in case
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return
-    
-    setUploading(true)
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append("file", file)
-    
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      })
-      
-      if (res.ok) {
-        const data = await res.json()
-        setImage(data.url)
-      } else {
-        setMessage("Upload failed")
-      }
-    } catch (error) {
-      console.error("Upload failed", error)
-      setMessage("An error occurred during upload")
-    } finally {
-      setUploading(false)
-    }
-  }
+
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,7 +42,7 @@ function SettingsContent() {
       const res = await fetch("/api/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, image })
+        body: JSON.stringify({ name, profileUrl })
       })
 
       if (res.ok) {
@@ -109,24 +82,15 @@ function SettingsContent() {
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-3 text-foreground/80">Profile Picture</label>
-              <div className="flex items-center gap-6">
-                <div className="w-24 h-24 rounded-full border border-border overflow-hidden bg-muted flex items-center justify-center shrink-0">
-                  {image ? (
-                    <img src={image} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-10 h-10 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors text-sm border border-border">
-                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-                    {uploading ? 'Uploading...' : 'Upload Image'}
-                    <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
-                  </label>
-                  <p className="text-xs text-muted-foreground mt-2">Recommended size: 256x256px. Max size: 5MB.</p>
-                </div>
-              </div>
+              <label className="block text-sm font-medium mb-2 text-foreground/80">Xentro Public Profile URL</label>
+              <input
+                type="url"
+                value={profileUrl}
+                onChange={(e) => setProfileUrl(e.target.value)}
+                placeholder="https://xentro.in/username"
+                className="w-full bg-background border border-border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-2">Must be a valid Xentro public profile URL (starts with https://xentro.in/).</p>
             </div>
 
             <div>
