@@ -74,6 +74,30 @@ export default async function TicketDetail({ params }: { params: { id: string } 
               </span>
             </div>
             <p className="text-muted-foreground whitespace-pre-wrap">{ticket.description}</p>
+            {ticket.attachments && ticket.attachments.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-sm font-semibold mb-3 text-foreground">Attachments</h3>
+                <div className="flex flex-wrap gap-3">
+                  {ticket.attachments.map((url, i) => (
+                    <a 
+                      key={i} 
+                      href={url} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="group relative block w-32 h-32 rounded-lg border border-border overflow-hidden bg-muted"
+                    >
+                      {url.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                        <img src={url} alt="Attachment" className="object-cover w-full h-full group-hover:opacity-90 transition-opacity" />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-full text-xs font-medium px-2 break-all text-center">
+                          {url.split('/').pop()}
+                        </div>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="mt-4 text-xs text-muted-foreground flex gap-4">
               <span>Opened by {ticket.user.name || 'User'}</span>
               <span>•</span>
@@ -110,6 +134,19 @@ export default async function TicketDetail({ params }: { params: { id: string } 
                         </span>
                       </div>
                       <p className="whitespace-pre-wrap text-sm">{msg.message}</p>
+                      {msg.attachments && msg.attachments.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {msg.attachments.map((url, i) => (
+                            <a key={i} href={url} target="_blank" rel="noreferrer" className="block w-24 h-24 rounded border border-border overflow-hidden bg-background">
+                              {url.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                                <img src={url} alt="Attachment" className="object-cover w-full h-full" />
+                              ) : (
+                                <div className="flex items-center justify-center w-full h-full text-[10px] p-1 text-center break-all">{url.split('/').pop()}</div>
+                              )}
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )

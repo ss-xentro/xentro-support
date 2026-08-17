@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { title, description } = body
+    const { title, description, attachments } = body
 
     if (!title || !description) {
       return new NextResponse("Missing fields", { status: 400 })
@@ -62,7 +62,8 @@ export async function POST(req: Request) {
       data: {
         title,
         description,
-        userId: sessionUser.id
+        userId: sessionUser.id,
+        attachments: attachments || []
       }
     })
 
