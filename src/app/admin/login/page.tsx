@@ -54,6 +54,15 @@ export default function AdminLogin() {
       if (res?.error) {
         setError(res.error)
       } else {
+        const meRes = await fetch("/api/me")
+        if (meRes.ok) {
+          const userData = await meRes.json()
+          if (!userData.name) {
+            router.push("/settings?firstLogin=true")
+            router.refresh()
+            return
+          }
+        }
         const callbackUrl = searchParams.get("callbackUrl") || "/admin/tickets"
         router.push(callbackUrl)
         router.refresh()

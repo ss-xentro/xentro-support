@@ -5,8 +5,9 @@ import { prisma } from "@/lib/prisma"
 export interface SessionUser {
   id: string
   email: string
-  name?: string
-  role: string
+  name?: string | null
+  image?: string | null
+  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN'
 }
 
 export async function getAuthCookieServer(): Promise<SessionUser | null> {

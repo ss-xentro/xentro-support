@@ -53,6 +53,15 @@ export default function Login() {
       if (res?.error) {
         setError(res.error)
       } else {
+        const meRes = await fetch("/api/me")
+        if (meRes.ok) {
+          const userData = await meRes.json()
+          if (!userData.name) {
+            router.push("/settings?firstLogin=true")
+            router.refresh()
+            return
+          }
+        }
         router.push("/dashboard")
         router.refresh()
       }

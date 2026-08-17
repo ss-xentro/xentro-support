@@ -3,14 +3,28 @@
 import { useAuth } from "@/contexts/AuthContext"
 import { signOut } from "next-auth/react"
 import Link from "next/link"
-import { LifeBuoy, LogIn, LogOut, LayoutDashboard } from "lucide-react"
+import { LifeBuoy, LogIn, LogOut, LayoutDashboard, Settings, User as UserIcon, ChevronDown } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
 
 export function Navbar() {
   const { user, isAuthenticated, isLoading } = useAuth()
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' })
   }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   return (
     <nav className="border-b border-border/40 backdrop-blur-md sticky top-0 z-50 bg-background/80">
@@ -21,23 +35,62 @@ export function Navbar() {
         </Link>
         <div className="flex items-center gap-4">
           {isLoading ? (
-            <div className="w-20 h-8 bg-secondary animate-pulse rounded-md" />
+            <div className="w-10 h-10 bg-secondary animate-pulse rounded-full" />
           ) : isAuthenticated && user ? (
-            <div className="flex items-center gap-3">
-              <Link
-                href={user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? "/admin" : "/dashboard"}
-                className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2 p-1.5 rounded-full hover:bg-secondary/80 transition-colors border border-transparent focus:border-border"
               >
-                <LayoutDashboard className="w-4 h-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="text-sm font-medium text-destructive hover:text-destructive/80 transition-colors flex items-center gap-1"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Sign Out</span>
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center overflow-hidden">
+                  {user.image ? (
+                    <img src={user.image} alt={user.name || "User"} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="font-bold text-sm">{(user.name || "U").charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
+
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-2 animate-fadeIn z-50">
+                  <div className="px-4 py-2 border-b border-border/50 mb-2">
+                    <p className="text-sm font-medium truncate">{user.name || "User"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  
+                  <Link
+                    href={user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? "/admin/tickets" : "/dashboard"}
+                    className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-muted-foreground" />
+                    Dashboard
+                  </Link>
+                  
+                  <Link
+                    href="/settings"
+                    className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <Settings className="w-4 h-4 text-muted-foreground" />
+                    Settings
+                  </Link>
+                  
+                  <div className="h-px bg-border/50 my-2" />
+                  
+                  <button
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      handleSignOut();
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <Link

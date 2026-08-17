@@ -4,10 +4,11 @@ import { SessionProvider, useSession } from "next-auth/react"
 import { ReactNode } from "react"
 
 export interface SessionUser {
-  id?: string
-  email?: string
-  name?: string
-  role?: string
+  id: string
+  email: string
+  name?: string | null
+  image?: string | null
+  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN'
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
