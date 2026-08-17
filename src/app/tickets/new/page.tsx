@@ -11,15 +11,17 @@ export default function NewTicket() {
   const router = useRouter()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
+  const [profileUrl, setProfileUrl] = useState("")
   const [loading, setLoading] = useState(false)
-  
   const [attachments, setAttachments] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
-
-  // Wait for loading to finish, middleware handles actual redirect
-  if (!isLoading && !isAuthenticated) {
-    return null
+  
+  // Wait for loading to finish
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>
   }
+  
+  if (!isAuthenticated) return null;
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return
@@ -71,7 +73,7 @@ export default function NewTicket() {
       const res = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, attachments }),
+        body: JSON.stringify({ title, description, profileUrl, attachments }),
       })
 
       if (res.ok) {
@@ -113,6 +115,19 @@ export default function NewTicket() {
               />
             </div>
             
+            <div>
+              <label htmlFor="profileUrl" className="block text-sm font-medium mb-2">Xentro Profile URL</label>
+              <input
+                id="profileUrl"
+                type="url"
+                required
+                value={profileUrl}
+                onChange={(e) => setProfileUrl(e.target.value)}
+                placeholder="https://xentro.in/profile/..."
+                className="w-full bg-background border border-border rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+            </div>
+
             <div>
               <label htmlFor="description" className="block text-sm font-medium mb-2">Description</label>
               <textarea

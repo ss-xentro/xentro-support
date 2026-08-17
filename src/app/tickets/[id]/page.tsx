@@ -98,10 +98,10 @@ export default async function TicketDetail({ params }: { params: { id: string } 
                 </div>
               </div>
             )}
-            <div className="mt-4 text-xs text-muted-foreground flex gap-4">
-              <span>Opened by {ticket.user.name || 'User'}</span>
-              <span>•</span>
-              <span>{new Date(ticket.createdAt).toLocaleString()}</span>
+            <div className="mt-6 flex flex-wrap gap-4 text-xs text-muted-foreground bg-background rounded-lg border border-border p-3">
+              <div><strong className="text-foreground">Opened by:</strong> {ticket.user.name || 'User'}</div>
+              <div><strong className="text-foreground">Created:</strong> {new Date(ticket.createdAt).toLocaleString()}</div>
+              <div><strong className="text-foreground">Profile URL:</strong> <a href={ticket.profileUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">{ticket.profileUrl}</a></div>
             </div>
           </div>
           

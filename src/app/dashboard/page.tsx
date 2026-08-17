@@ -8,7 +8,7 @@ export default async function Dashboard() {
   const sessionUser = await getAuthCookieServer()
 
   if (!sessionUser || !sessionUser.id) {
-    redirect("/")
+    redirect("/login")
   }
 
   const tickets = await prisma.ticket.findMany({
