@@ -10,8 +10,12 @@ export default async function AdminLayout({
 }) {
   const sessionUser = await getAuthCookieServer()
 
-  if (!sessionUser || (sessionUser.role !== 'admin' && sessionUser.role !== 'ADMIN')) {
-    redirect("/")
+  if (!sessionUser) {
+    redirect("/login")
+  }
+
+  if (sessionUser.role !== 'ADMIN' && sessionUser.role !== 'SUPER_ADMIN') {
+    redirect("/dashboard")
   }
 
   return (
