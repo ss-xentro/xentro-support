@@ -7,14 +7,12 @@ import { Loader2 } from "lucide-react"
 export default function AdminSettingsPage() {
   const { user, isAuthenticated, isLoading } = useAuth()
   const [name, setName] = useState("")
-  const [profileUrl, setProfileUrl] = useState("")
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
 
   useEffect(() => {
     if (user) {
       setName(user.name || "")
-      setProfileUrl(user.profileUrl || "")
     }
   }, [user])
 
@@ -35,7 +33,7 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, profileUrl })
+        body: JSON.stringify({ name })
       })
 
       if (res.ok) {
@@ -64,18 +62,6 @@ export default function AdminSettingsPage() {
               {message}
             </div>
           )}
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-foreground/80">Xentro Public Profile URL</label>
-            <input
-              type="url"
-              value={profileUrl}
-              onChange={(e) => setProfileUrl(e.target.value)}
-              placeholder="https://xentro.in/username"
-              className="w-full bg-background border border-border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-            />
-            <p className="text-xs text-muted-foreground mt-2">Must be a valid Xentro public profile URL (starts with https://xentro.in/).</p>
-          </div>
 
           <div>
             <label className="block text-sm font-medium mb-2 text-foreground/80">Full Name</label>
