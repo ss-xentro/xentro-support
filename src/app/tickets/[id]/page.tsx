@@ -5,6 +5,8 @@ import Link from "next/link"
 import { ArrowLeft, Send } from "lucide-react"
 import { revalidatePath } from "next/cache"
 
+import { Navbar } from "@/components/navbar"
+
 export default async function TicketDetail({ params }: { params: { id: string } }) {
   const sessionUser = await getAuthCookieServer()
 
@@ -54,8 +56,9 @@ export default async function TicketDetail({ params }: { params: { id: string } 
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-10">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+      <div className="flex-1 max-w-4xl mx-auto px-4 py-10 w-full">
         <Link href={sessionUser.role === 'ADMIN' || sessionUser.role === 'SUPER_ADMIN' ? "/admin/tickets" : "/dashboard"} className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to {sessionUser.role === 'ADMIN' || sessionUser.role === 'SUPER_ADMIN' ? 'Admin Tickets' : 'Dashboard'}
@@ -66,8 +69,8 @@ export default async function TicketDetail({ params }: { params: { id: string } 
             <div className="flex justify-between items-start mb-4">
               <h1 className="text-2xl font-bold">{ticket.title}</h1>
               <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${ticket.status === 'OPEN' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                  ticket.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
-                    'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                ticket.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                  'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
                 }`}>
                 {ticket.status.replace('_', ' ')}
               </span>

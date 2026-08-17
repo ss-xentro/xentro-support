@@ -1,71 +1,18 @@
 "use client"
 
-import { useAuth } from "@/contexts/AuthContext"
-import { signOut } from "next-auth/react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { Search, LifeBuoy, Book, LogIn, LogOut, LayoutDashboard } from "lucide-react"
-import { useTheme } from "@/components/theme-provider"
+import { Search, LifeBuoy, Book } from "lucide-react"
+import { Navbar } from "@/components/navbar"
 
 export default function Home() {
-  const { user, isAuthenticated, isLoading } = useAuth()
-  const { theme, setTheme } = useTheme()
-
-  const handleSignOut = () => {
-    signOut({ callbackUrl: '/' })
-  }
-
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       {/* Premium Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none" />
 
-      {/* Navbar */}
-      <nav className="border-b border-border/40 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <LifeBuoy className="w-6 h-6 text-primary" />
-            <span className="font-bold text-xl tracking-tight">Xentro Support</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-full hover:bg-secondary transition-colors"
-            >
-              {theme === 'dark' ? '🌞' : '🌙'}
-            </button>
-            {isLoading ? (
-              <div className="w-20 h-8 bg-secondary animate-pulse rounded-md" />
-            ) : isAuthenticated && user ? (
-              <div className="flex items-center gap-3">
-                <Link
-                  href={user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? "/admin" : "/dashboard"}
-                  className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  Dashboard
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="text-sm font-medium text-destructive hover:text-destructive/80 transition-colors flex items-center gap-1"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-all shadow-sm flex items-center gap-2"
-              >
-                <LogIn className="w-4 h-4" />
-                Sign In
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-20 text-center z-10">
@@ -119,7 +66,7 @@ export default function Home() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/10 transition-colors" />
             <LifeBuoy className="w-8 h-8 text-green-500 mb-4" />
             <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">Submit a Ticket</h3>
-            <p className="text-muted-foreground">Can't find what you're looking for? Our support team is here to help.</p>
+            <p className="text-muted-foreground">Can&apos;t find what you&apos;re looking for? Our support team is here to help.</p>
           </Link>
         </motion.div>
       </main>

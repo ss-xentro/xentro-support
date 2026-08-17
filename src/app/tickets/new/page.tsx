@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Loader2, UploadCloud, X } from "lucide-react"
 
+import { Navbar } from "@/components/navbar"
+
 export default function NewTicket() {
-  const { isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
+  const { user, isAuthenticated, isLoading } = useAuth()
+  
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [profileUrl, setProfileUrl] = useState("")
@@ -90,8 +93,9 @@ export default function NewTicket() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+      <div className="flex-1 max-w-2xl mx-auto px-4 py-10 w-full">
         <Link href="/dashboard" className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard

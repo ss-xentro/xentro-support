@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { PlusCircle, MessageSquare } from "lucide-react"
 
+import { Navbar } from "@/components/navbar"
+
 export default async function Dashboard() {
   const sessionUser = await getAuthCookieServer()
 
@@ -22,8 +24,9 @@ export default async function Dashboard() {
   })
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Your Dashboard</h1>
